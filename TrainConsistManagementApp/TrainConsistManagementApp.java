@@ -1,43 +1,41 @@
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * MAIN CLASS - UseCase5TrainConsistMgmt
- * Use Case 5: Preserve Insertion Order of Bogies
- * This class maintains the exact attachment order of bogies
- * while also preventing duplicate entries using LinkedHashSet.
+ * MAIN CLASS - UseCase6TrainConsistMgmt
+ * Use Case 6: Map Bogie to Capacity (HashMap)
+ * This class associates each bogie with its seating and
+ * load capacity using a key-value mapping structure.
  */
 public class TrainConsistManagementApp {
 
     public static void main(String[] args) {
         // 1. Display Header
         System.out.println("=========================================");
-        System.out.println(" UC5: Preserve Insertion Order of Bogies ");
+        System.out.println(" UC6: Map Bogie to Capacity (HashMap)    ");
         System.out.println("=========================================\n");
 
-        // 2. Create a LinkedHashSet to represent the train formation
-        // LinkedHashSet preserves order and ensures uniqueness
-        Set<String> formation = new LinkedHashSet<>();
+        // 2. Create a HashMap to store bogie-capacity information
+        // String is the Key (Bogie Type), Integer is the Value (Capacity)
+        Map<String, Integer> bogieCapacities = new HashMap<>();
 
-        // 3. Attach bogies in sequence
-        formation.add("Engine");
-        formation.add("Sleeper");
-        formation.add("Cargo");
-        formation.add("Guard");
+        // 3. Insert capacity values using the put() method
+        // This binds the bogie name to its specific property (e.g., seats or tons)
+        bogieCapacities.put("Sleeper", 72);
+        bogieCapacities.put("AC Chair", 56);
+        bogieCapacities.put("First Class", 24);
+        bogieCapacities.put("Cargo", 120);
 
-        // 4. Attempt to attach a duplicate bogie intentionally
-        // The add() method will ignore this automatically to protect the consist
-        formation.add("Sleeper");
+        // 4. Display the mapping details
+        System.out.println("Bogie Capacity Details:");
 
-        // 5. Display the final formation order
-        // Bogies are returned in the same order they were connected to the engine
-        System.out.println("Final Train Formation:");
-        System.out.println(formation + "\n");
+        // 5. Iterate over the map using entrySet()
+        // This allows us to access both the Key and Value in one loop
+        for (Map.Entry<String, Integer> entry : bogieCapacities.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue());
+        }
 
-        // 6. Observation Note
-        System.out.println("Note:");
-        System.out.println("LinkedHashSet preserves insertion order and removes duplicates automatically.");
-
-        System.out.println("\nUC5 formation setup completed...");
+        // 6. Final status message
+        System.out.println("\nUC6 bogie-capacity mapping completed...");
     }
 }
