@@ -4,46 +4,44 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TrainConsistManagementAppTest {
 
     @Test
-    void testSearch_BogieFound() {
-        // Verifies that an existing bogie ID is correctly identified
+    void testBinarySearch_BogieFound() {
+        // Verifies that an existing ID is found in a list
         String[] bogieIDs = {"BG101", "BG205", "BG309", "BG412", "BG550"};
-        assertTrue(TrainConsistManagementApp.searchBogieID(bogieIDs, "BG309"));
+        assertTrue(TrainConsistManagementApp.binarySearchBogieID(bogieIDs, "BG309"));
     }
 
     @Test
-    void testSearch_BogieNotFound() {
-        // Verifies that a non-existent bogie ID returns false
+    void testBinarySearch_BogieNotFound() {
+        // Verifies return false for non-existent IDs
         String[] bogieIDs = {"BG101", "BG205", "BG309", "BG412", "BG550"};
-        assertFalse(TrainConsistManagementApp.searchBogieID(bogieIDs, "BG999"));
+        assertFalse(TrainConsistManagementApp.binarySearchBogieID(bogieIDs, "BG999"));
     }
 
     @Test
-    void testSearch_FirstElementMatch() {
-        // Verifies that the search correctly identifies a match at index 0
-        String[] bogieIDs = {"BG101", "BG205", "BG309"};
-        assertTrue(TrainConsistManagementApp.searchBogieID(bogieIDs, "BG101"));
+    void testBinarySearch_FirstElementMatch() {
+        // Verifies it finds the first element (alphabetically)
+        String[] bogieIDs = {"BG550", "BG101", "BG205"};
+        assertTrue(TrainConsistManagementApp.binarySearchBogieID(bogieIDs, "BG101"));
     }
 
     @Test
-    void testSearch_LastElementMatch() {
-        // Verifies that the search correctly identifies a match at the final index
+    void testBinarySearch_LastElementMatch() {
+        // Verifies it finds the last element (alphabetically)
         String[] bogieIDs = {"BG101", "BG205", "BG550"};
-        assertTrue(TrainConsistManagementApp.searchBogieID(bogieIDs, "BG550"));
+        assertTrue(TrainConsistManagementApp.binarySearchBogieID(bogieIDs, "BG550"));
     }
 
     @Test
-    void testSearch_SingleElementArray() {
-        // Verifies that search works when only one bogie exists
-        String[] bogieIDs = {"BG101"};
-        assertTrue(TrainConsistManagementApp.searchBogieID(bogieIDs, "BG101"));
-        assertFalse(TrainConsistManagementApp.searchBogieID(bogieIDs, "BG205"));
+    void testBinarySearch_EmptyArray() {
+        // Verifies safe handling of empty lists
+        String[] bogieIDs = {};
+        assertFalse(TrainConsistManagementApp.binarySearchBogieID(bogieIDs, "BG101"));
     }
 
     @Test
-    void testSearch_NullHandling() {
-        // Verifies that null inputs do not cause crashes
-        assertFalse(TrainConsistManagementApp.searchBogieID(null, "BG101"));
-        String[] bogieIDs = {"BG101"};
-        assertFalse(TrainConsistManagementApp.searchBogieID(bogieIDs, null));
+    void testBinarySearch_UnsortedInputHandled() {
+        // Verifies that the internal sort allows searching through unsorted input
+        String[] bogieIDs = {"BG309", "BG101", "BG550", "BG205", "BG412"};
+        assertTrue(TrainConsistManagementApp.binarySearchBogieID(bogieIDs, "BG205"));
     }
 }

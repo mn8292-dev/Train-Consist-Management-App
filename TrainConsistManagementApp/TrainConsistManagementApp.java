@@ -1,49 +1,62 @@
+import java.util.Arrays;
+
 /**
  * TrainConsistManagementApp
- * UC18: Linear Search for Bogie ID (Array-Based Searching)
+ * UC19: Binary Search for Bogie ID (Optimized Searching)
  */
 public class TrainConsistManagementApp {
 
     /**
-     * Searches for a specific bogie ID in an array using Linear Search.
-     * Compares the target ID against each element sequentially.
+     * Performs Binary Search on an array of bogie IDs.
+     * Note: The array MUST be sorted for Binary Search to work.
      */
-    public static boolean searchBogieID(String[] bogieIDs, String targetID) {
-        if (bogieIDs == null || targetID == null) {
+    public static boolean binarySearchBogieID(String[] bogieIDs, String targetID) {
+        if (bogieIDs == null || targetID == null || bogieIDs.length == 0) {
             return false;
         }
 
-        for (String id : bogieIDs) {
-            // Check if current ID matches the target (case-sensitive)
-            if (id.equals(targetID)) {
-                return true; // Match found, terminate search immediately
+        // Binary Search requires sorted data
+        Arrays.sort(bogieIDs);
+
+        int low = 0;
+        int high = bogieIDs.length - 1;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int comparison = targetID.compareTo(bogieIDs[mid]);
+
+            if (comparison == 0) {
+                return true; // Match found
+            } else if (comparison > 0) {
+                low = mid + 1; // Target is in the right half
+            } else {
+                high = mid - 1; // Target is in the left half
             }
         }
-        return false; // Traversed entire array without finding a match
+
+        return false; // Target not found
     }
 
     public static void main(String[] args) {
         System.out.println("==========================================");
-        System.out.println(" UC18 - Bogie ID Search (Linear Search) ");
+        System.out.println(" UC19 - Optimized Search (Binary Search) ");
         System.out.println("==========================================\n");
 
-        // 1. Array of bogie IDs in the train consist
-        String[] trainConsist = {"BG101", "BG205", "BG309", "BG412", "BG550"};
+        // Unsorted array of IDs
+        String[] trainConsist = {"BG309", "BG101", "BG550", "BG205", "BG412"};
+        String searchKey = "BG205";
 
-        String searchKey = "BG309";
+        System.out.println("Searching for Bogie ID: " + searchKey);
 
-        System.out.println("Scanning train consist for Bogie ID: " + searchKey);
+        // Apply Binary Search
+        boolean found = binarySearchBogieID(trainConsist, searchKey);
 
-        // 2. Perform Linear Search
-        boolean found = searchBogieID(trainConsist, searchKey);
-
-        // 3. Display search result
         if (found) {
-            System.out.println("SUCCESS: Bogie " + searchKey + " located in the consist.");
+            System.out.println("SUCCESS: Bogie " + searchKey + " located quickly via Binary Search.");
         } else {
-            System.out.println("ALERT: Bogie " + searchKey + " not found in this train.");
+            System.out.println("ALERT: Bogie " + searchKey + " not found.");
         }
 
-        System.out.println("\nUC18 search completed...");
+        System.out.println("\nUC19 search completed...");
     }
 }
