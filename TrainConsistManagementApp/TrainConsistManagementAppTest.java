@@ -1,58 +1,53 @@
 import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TrainConsistManagementAppTest {
 
     @Test
-    void testRegex_ValidTrainID() {
-        // Verifies that a correctly formatted Train ID is accepted
-        assertTrue(TrainConsistManagementApp.validateTrainID("TRN-1234"));
+    void testSafety_AllBogiesValid() {
+        // Verifies train is marked safe when all cylindrical bogies carry Petroleum [cite: 104, 106]
+        List<TrainConsistManagementApp.Bogie> bogies = new ArrayList<>();
+        bogies.add(new TrainConsistManagementApp.Bogie("Cylindrical", "Petroleum"));
+        bogies.add(new TrainConsistManagementApp.Bogie("Open", "Coal"));
+
+        assertTrue(TrainConsistManagementApp.isTrainSafe(bogies));
     }
 
     @Test
-    void testRegex_InvalidTrainIDFormat() {
-        // Verifies that incorrectly formatted Train IDs are rejected
-        assertFalse(TrainConsistManagementApp.validateTrainID("TRAIN12"));
-        assertFalse(TrainConsistManagementApp.validateTrainID("1234-TRN"));
+    void testSafety_CylindricalWithInvalidCargo() {
+        // Verifies that cylindrical bogies carrying non-petroleum cargo fail validation [cite: 107, 108]
+        List<TrainConsistManagementApp.Bogie> bogies = new ArrayList<>();
+        bogies.add(new TrainConsistManagementApp.Bogie("Cylindrical", "Coal"));
+
+        assertFalse(TrainConsistManagementApp.isTrainSafe(bogies));
     }
 
     @Test
-    void testRegex_TrainIDDigitLengthValidation() {
-        // Verifies that Train ID contains exactly four digits
-        assertFalse(TrainConsistManagementApp.validateTrainID("TRN-123"));
-        assertFalse(TrainConsistManagementApp.validateTrainID("TRN-12345"));
+    void testSafety_NonCylindricalBogiesAllowed() {
+        // Verifies that non-cylindrical bogies can carry any cargo safely [cite: 109, 111]
+        List<TrainConsistManagementApp.Bogie> bogies = new ArrayList<>();
+        bogies.add(new TrainConsistManagementApp.Bogie("Open", "Chemicals"));
+        bogies.add(new TrainConsistManagementApp.Bogie("Box", "Electronics"));
+
+        assertTrue(TrainConsistManagementApp.isTrainSafe(bogies));
     }
 
     @Test
-    void testRegex_ValidCargoCode() {
-        // Verifies that a Cargo Code following the correct format is accepted
-        assertTrue(TrainConsistManagementApp.validateCargoCode("PET-AB"));
+    void testSafety_MixedBogiesWithViolation() {
+        // Verifies that a single violation makes the entire train unsafe
+        List<TrainConsistManagementApp.Bogie> bogies = new ArrayList<>();
+        bogies.add(new TrainConsistManagementApp.Bogie("Cylindrical", "Petroleum"));
+        bogies.add(new TrainConsistManagementApp.Bogie("Cylindrical", "Water")); // Violation [cite: 112]
+
+        assertFalse(TrainConsistManagementApp.isTrainSafe(bogies));
     }
 
     @Test
-    void testRegex_InvalidCargoCodeFormat() {
-        // Verifies that incorrectly formatted Cargo Codes are rejected
-        assertFalse(TrainConsistManagementApp.validateCargoCode("PET123"));
-        assertFalse(TrainConsistManagementApp.validateCargoCode("AB-PET"));
-    }
-
-    @Test
-    void testRegex_CargoCodeUppercaseValidation() {
-        // Verifies that Cargo Code accepts only uppercase characters
-        assertFalse(TrainConsistManagementApp.validateCargoCode("PET-ab"));
-        assertFalse(TrainConsistManagementApp.validateCargoCode("pet-AB"));
-    }
-
-    @Test
-    void testRegex_EmptyInputHandling() {
-        // Verifies behavior when empty strings are provided
-        assertFalse(TrainConsistManagementApp.validateTrainID(""));
-        assertFalse(TrainConsistManagementApp.validateCargoCode(""));
-    }
-
-    @Test
-    void testRegex_ExactPatternMatch() {
-        // Verifies that the entire input must match the pattern
-        assertFalse(TrainConsistManagementApp.validateTrainID("TRN-1234 extra"));
+    void testSafety_EmptyBogieList() {
+        // Verifies behavior when no goods bogies exist (should be safe) [cite: 115, 117]
+        List<TrainConsistManagementApp.Bogie> bogies = new ArrayList<>();
+        assertTrue(TrainConsistManagementApp.isTrainSafe(bogies));
     }
 }
