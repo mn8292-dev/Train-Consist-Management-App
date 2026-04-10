@@ -2,61 +2,53 @@ import java.util.Arrays;
 
 /**
  * TrainConsistManagementApp
- * UC19: Binary Search for Bogie ID (Optimized Searching)
+ * UC20: Exception Handling During Search Operations
  */
 public class TrainConsistManagementApp {
 
     /**
-     * Performs Binary Search on an array of bogie IDs.
-     * Note: The array MUST be sorted for Binary Search to work.
+     * Searches for a bogie ID but validates that the train is not empty first.
+     * Throws IllegalStateException to prevent operations on empty data.
      */
-    public static boolean binarySearchBogieID(String[] bogieIDs, String targetID) {
-        if (bogieIDs == null || targetID == null || bogieIDs.length == 0) {
-            return false;
+    public static boolean searchWithValidation(String[] bogieIDs, String targetID) {
+        // Fail-Fast: Check if the data exists before processing
+        if (bogieIDs == null || bogieIDs.length == 0) {
+            throw new IllegalStateException("Search failed: No bogies found in the train consist.");
         }
 
-        // Binary Search requires sorted data
-        Arrays.sort(bogieIDs);
-
-        int low = 0;
-        int high = bogieIDs.length - 1;
-
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            int comparison = targetID.compareTo(bogieIDs[mid]);
-
-            if (comparison == 0) {
-                return true; // Match found
-            } else if (comparison > 0) {
-                low = mid + 1; // Target is in the right half
-            } else {
-                high = mid - 1; // Target is in the left half
+        // Standard Linear Search logic (as introduced in UC18)
+        for (String id : bogieIDs) {
+            if (id != null && id.equals(targetID)) {
+                return true;
             }
         }
-
-        return false; // Target not found
+        return false;
     }
 
     public static void main(String[] args) {
         System.out.println("==========================================");
-        System.out.println(" UC19 - Optimized Search (Binary Search) ");
+        System.out.println(" UC20 - Search Validation & Exceptions ");
         System.out.println("==========================================\n");
 
-        // Unsorted array of IDs
-        String[] trainConsist = {"BG309", "BG101", "BG550", "BG205", "BG412"};
-        String searchKey = "BG205";
-
-        System.out.println("Searching for Bogie ID: " + searchKey);
-
-        // Apply Binary Search
-        boolean found = binarySearchBogieID(trainConsist, searchKey);
-
-        if (found) {
-            System.out.println("SUCCESS: Bogie " + searchKey + " located quickly via Binary Search.");
-        } else {
-            System.out.println("ALERT: Bogie " + searchKey + " not found.");
+        // Scenario 1: Searching an empty train (Should trigger exception)
+        String[] emptyTrain = {};
+        try {
+            System.out.println("Attempting search on empty train...");
+            searchWithValidation(emptyTrain, "BG101");
+        } catch (IllegalStateException e) {
+            System.err.println("Caught Expected Error: " + e.getMessage());
         }
 
-        System.out.println("\nUC19 search completed...");
+        // Scenario 2: Searching a valid train
+        String[] validTrain = {"BG101", "BG205", "BG309"};
+        try {
+            System.out.println("\nAttempting search on valid train...");
+            boolean found = searchWithValidation(validTrain, "BG205");
+            System.out.println("Search Result: " + (found ? "Found" : "Not Found"));
+        } catch (IllegalStateException e) {
+            System.err.println("Unexpected Error: " + e.getMessage());
+        }
+
+        System.out.println("\nUC20 exception handling completed...");
     }
 }

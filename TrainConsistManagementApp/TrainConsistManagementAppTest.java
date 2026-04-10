@@ -4,44 +4,50 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TrainConsistManagementAppTest {
 
     @Test
-    void testBinarySearch_BogieFound() {
-        // Verifies that an existing ID is found in a list
-        String[] bogieIDs = {"BG101", "BG205", "BG309", "BG412", "BG550"};
-        assertTrue(TrainConsistManagementApp.binarySearchBogieID(bogieIDs, "BG309"));
-    }
-
-    @Test
-    void testBinarySearch_BogieNotFound() {
-        // Verifies return false for non-existent IDs
-        String[] bogieIDs = {"BG101", "BG205", "BG309", "BG412", "BG550"};
-        assertFalse(TrainConsistManagementApp.binarySearchBogieID(bogieIDs, "BG999"));
-    }
-
-    @Test
-    void testBinarySearch_FirstElementMatch() {
-        // Verifies it finds the first element (alphabetically)
-        String[] bogieIDs = {"BG550", "BG101", "BG205"};
-        assertTrue(TrainConsistManagementApp.binarySearchBogieID(bogieIDs, "BG101"));
-    }
-
-    @Test
-    void testBinarySearch_LastElementMatch() {
-        // Verifies it finds the last element (alphabetically)
-        String[] bogieIDs = {"BG101", "BG205", "BG550"};
-        assertTrue(TrainConsistManagementApp.binarySearchBogieID(bogieIDs, "BG550"));
-    }
-
-    @Test
-    void testBinarySearch_EmptyArray() {
-        // Verifies safe handling of empty lists
+    void testSearch_ThrowsExceptionWhenEmpty() {
+        // Verifies that searching an empty array triggers an IllegalStateException
         String[] bogieIDs = {};
-        assertFalse(TrainConsistManagementApp.binarySearchBogieID(bogieIDs, "BG101"));
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            TrainConsistManagementApp.searchWithValidation(bogieIDs, "BG101");
+        });
+        assertEquals("Search failed: No bogies found in the train consist.", exception.getMessage());
     }
 
     @Test
-    void testBinarySearch_UnsortedInputHandled() {
-        // Verifies that the internal sort allows searching through unsorted input
-        String[] bogieIDs = {"BG309", "BG101", "BG550", "BG205", "BG412"};
-        assertTrue(TrainConsistManagementApp.binarySearchBogieID(bogieIDs, "BG205"));
+    void testSearch_AllowsSearchWhenDataExists() {
+        // Verifies that the search executes without exception if data is present
+        String[] bogieIDs = {"BG101", "BG205"};
+        assertDoesNotThrow(() -> {
+            TrainConsistManagementApp.searchWithValidation(bogieIDs, "BG101");
+        });
+    }
+
+    @Test
+    void testSearch_BogieFoundAfterValidation() {
+        // Verifies that a bogie is correctly found after passing state validation
+        String[] bogieIDs = {"BG101", "BG205", "BG309"};
+        assertTrue(TrainConsistManagementApp.searchWithValidation(bogieIDs, "BG205"));
+    }
+
+    @Test
+    void testSearch_BogieNotFoundAfterValidation() {
+        // Verifies that false is returned (not an exception) if the ID isn't in a non-empty list
+        String[] bogieIDs = {"BG101", "BG205", "BG309"};
+        assertFalse(TrainConsistManagementApp.searchWithValidation(bogieIDs, "BG999"));
+    }
+
+    @Test
+    void testSearch_SingleElementValidCase() {
+        // Verifies correct behavior for a train with exactly one bogie
+        String[] bogieIDs = {"BG101"};
+        assertTrue(TrainConsistManagementApp.searchWithValidation(bogieIDs, "BG101"));
+    }
+
+    @Test
+    void testSearch_NullInputThrowsException() {
+        // Verifies that null input is also caught by the fail-fast check
+        assertThrows(IllegalStateException.class, () -> {
+            TrainConsistManagementApp.searchWithValidation(null, "BG101");
+        });
     }
 }
