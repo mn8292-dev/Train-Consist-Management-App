@@ -1,54 +1,60 @@
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TrainConsistManagementApp
- * UC11: Validate Train ID & Cargo Codes (Regex)
+ * UC12: Safety Compliance Check for Goods Bogies
  */
 public class TrainConsistManagementApp {
 
-    // Regex Patterns
-    // Train ID: Starts with "TRN-" followed by exactly 4 digits [cite: 52]
-    private static final String TRAIN_ID_REGEX = "^TRN-\\d{4}$";
+    // Bogie model including type and cargo for safety validation
+    public static class Bogie {
+        public String name;    // e.g., "Cylindrical", "Open", "Box"
+        public String cargo;   // e.g., "Petroleum", "Coal" [cite: 13]
 
-    // Cargo Code: 3 uppercase letters, a hyphen, and 2 uppercase letters (e.g., PET-AB) [cite: 53]
-    private static final String CARGO_CODE_REGEX = "^[A-Z]{3}-[A-Z]{2}$";
-
-    /**
-     * Validates if the Train ID follows the format TRN-XXXX (where X is a digit).
-     */
-    public static boolean validateTrainID(String trainID) {
-        if (trainID == null) return false;
-        return Pattern.matches(TRAIN_ID_REGEX, trainID);
+        public Bogie(String name, String cargo) {
+            this.name = name;
+            this.cargo = cargo;
+        }
     }
 
     /**
-     * Validates if the Cargo Code follows the format AAA-BB (Uppercase letters).
+     * Checks if the train is safe based on cargo rules.
+     * Rule: Cylindrical bogies MUST carry Petroleum. [cite: 12, 62]
+     * Uses allMatch() to ensure every bogie satisfies the safety condition. [cite: 62]
      */
-    public static boolean validateCargoCode(String cargoCode) {
-        if (cargoCode == null) return false;
-        return Pattern.matches(CARGO_CODE_REGEX, cargoCode);
+    public static boolean isTrainSafe(List<Bogie> goodsBogies) {
+        // If no goods bogies exist, the train is safe by default [cite: 14]
+        return goodsBogies.stream().allMatch(b -> {
+            if (b.name.equalsIgnoreCase("Cylindrical")) {
+                return b.cargo.equalsIgnoreCase("Petroleum"); // Safety constraint [cite: 12, 62]
+            }
+            return true; // Non-cylindrical bogies are always safe regardless of cargo [cite: 13]
+        });
     }
 
     public static void main(String[] args) {
         System.out.println("==========================================");
-        System.out.println(" UC11 - Validate Train ID & Cargo Codes ");
+        System.out.println(" UC12 - Safety Compliance Check ");
         System.out.println("==========================================\n");
 
-        // Sample Inputs for demonstration
-        String[] trainIDs = {"TRN-1234", "TRN-12", "1234-TRN"};
-        String[] cargoCodes = {"PET-AB", "pet-ab", "PET123"};
+        // 1. User creates a list of goods bogies [cite: 42, 53]
+        List<Bogie> goodsBogies = new ArrayList<>();
+        goodsBogies.add(new Bogie("Cylindrical", "Petroleum"));
+        goodsBogies.add(new Bogie("Open", "Coal"));
+        goodsBogies.add(new Bogie("Box", "Grain"));
+        goodsBogies.add(new Bogie("Cylindrical", "Petroleum"));
 
-        System.out.println("Train ID Validation:");
-        for (String id : trainIDs) {
-            System.out.println(id + " -> " + (validateTrainID(id) ? "Valid" : "Invalid"));
+        // 2. Perform safety validation [cite: 54]
+        boolean safe = isTrainSafe(goodsBogies);
+
+        // 3. Display safety status [cite: 55]
+        System.out.println("Safety Check Results:");
+        for (Bogie b : goodsBogies) {
+            System.out.println(b.name + " carrying " + b.cargo);
         }
 
-        System.out.println("\nCargo Code Validation:");
-        for (String code : cargoCodes) {
-            System.out.println(code + " -> " + (validateCargoCode(code) ? "Valid" : "Invalid"));
-        }
-
-        System.out.println("\nUC11 validation completed...");
+        System.out.println("\nIs Train Formation Safe? " + (safe ? "YES" : "NO"));
+        System.out.println("\nUC12 safety check completed..."); [cite: 14]
     }
 }
