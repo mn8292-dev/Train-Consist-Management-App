@@ -1,66 +1,55 @@
 import org.junit.jupiter.api.Test;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TrainConsistManagementAppTest {
 
     @Test
-    void testCargo_SafeAssignment() {
-        // Verifies that safe cargo assignments (Cylindrical + Petroleum) succeed
-        TrainConsistManagementApp.GoodsBogie bogie = new TrainConsistManagementApp.GoodsBogie("Cylindrical");
-        assertDoesNotThrow(() -> bogie.assignCargo("Petroleum"));
-        assertEquals("Petroleum", bogie.cargo);
+    void testSort_BasicSorting() {
+        // Verifies that Bubble Sort correctly sorts a typical unsorted array
+        int[] capacities = {72, 56, 24, 70, 60};
+        int[] expected = {24, 56, 60, 70, 72};
+
+        TrainConsistManagementApp.bubbleSort(capacities);
+        assertArrayEquals(expected, capacities);
     }
 
     @Test
-    void testCargo_UnsafeAssignmentHandled() {
-        // Verifies that unsafe assignments trigger the CargoSafetyException
-        TrainConsistManagementApp.GoodsBogie bogie = new TrainConsistManagementApp.GoodsBogie("Rectangular");
-        assertThrows(CargoSafetyException.class, () -> bogie.assignCargo("Petroleum"));
+    void testSort_AlreadySortedArray() {
+        // Verifies that an already sorted array remains unchanged
+        int[] capacities = {24, 56, 60, 70, 72};
+        int[] expected = {24, 56, 60, 70, 72};
+
+        TrainConsistManagementApp.bubbleSort(capacities);
+        assertArrayEquals(expected, capacities);
     }
 
     @Test
-    void testCargo_CargoNotAssignedAfterFailure() {
-        // Verifies that the cargo status remains "Empty" if the assignment fails
-        TrainConsistManagementApp.GoodsBogie bogie = new TrainConsistManagementApp.GoodsBogie("Rectangular");
-        try {
-            bogie.assignCargo("Petroleum");
-        } catch (CargoSafetyException e) {
-            // Exception expected
-        }
-        assertEquals("Empty", bogie.cargo);
+    void testSort_DuplicateValues() {
+        // Verifies that duplicate capacities are handled correctly
+        int[] capacities = {72, 56, 56, 24};
+        int[] expected = {24, 56, 56, 72};
+
+        TrainConsistManagementApp.bubbleSort(capacities);
+        assertArrayEquals(expected, capacities);
     }
 
     @Test
-    void testCargo_ProgramContinuesAfterException() {
-        // Verifies that an exception in one assignment doesn't crash subsequent logic
-        TrainConsistManagementApp.GoodsBogie bogie1 = new TrainConsistManagementApp.GoodsBogie("Rectangular");
-        TrainConsistManagementApp.GoodsBogie bogie2 = new TrainConsistManagementApp.GoodsBogie("Rectangular");
+    void testSort_SingleElementArray() {
+        // Verifies that sorting a single element array does not modify it
+        int[] capacities = {50};
+        int[] expected = {50};
 
-        try {
-            bogie1.assignCargo("Petroleum");
-        } catch (CargoSafetyException e) {
-            // Handle first failure
-        }
-
-        // Program should reach this line and succeed
-        assertDoesNotThrow(() -> bogie2.assignCargo("Coal"));
-        assertEquals("Coal", bogie2.cargo);
+        TrainConsistManagementApp.bubbleSort(capacities);
+        assertArrayEquals(expected, capacities);
     }
 
     @Test
-    void testCargo_FinallyBlockExecution() {
-        // Verifies that the finally logic (simulated by checking if we pass through the block) runs
-        boolean finallyExecuted = false;
-        try {
-            TrainConsistManagementApp.GoodsBogie bogie = new TrainConsistManagementApp.GoodsBogie("Rectangular");
-            bogie.assignCargo("Petroleum");
-        } catch (CargoSafetyException e) {
-            // Caught
-        } finally {
-            finallyExecuted = true;
-        }
-        assertTrue(finallyExecuted);
+    void testSort_AllEqualValues() {
+        // Verifies that arrays containing identical values remain unchanged
+        int[] capacities = {40, 40, 40};
+        int[] expected = {40, 40, 40};
+
+        TrainConsistManagementApp.bubbleSort(capacities);
+        assertArrayEquals(expected, capacities);
     }
 }

@@ -1,76 +1,47 @@
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Custom Exception for unsafe cargo combinations.
- */
-class CargoSafetyException extends Exception {
-    public CargoSafetyException(String message) {
-        super(message);
-    }
-}
+import java.util.Arrays;
 
 /**
  * TrainConsistManagementApp
- * UC15: Safe Cargo Assignment Using try-catch-finally
+ * UC16: Sort Passenger Bogies by Capacity (Bubble Sort)
  */
 public class TrainConsistManagementApp {
 
-    public static class GoodsBogie {
-        public String type;
-        public String cargo;
-
-        public GoodsBogie(String type) {
-            this.type = type;
-            this.cargo = "Empty";
-        }
-
-        /**
-         * Dynamically assigns cargo while enforcing safety rules.
-         * Rule: Petroleum can ONLY be assigned to Cylindrical bogies.
-         */
-        public void assignCargo(String newCargo) throws CargoSafetyException {
-            if (newCargo.equalsIgnoreCase("Petroleum") && !this.type.equalsIgnoreCase("Cylindrical")) {
-                throw new CargoSafetyException("Safety Violation: Petroleum cannot be carried in " + this.type + " bogies.");
+    /**
+     * Sorts an array of bogie capacities using the Bubble Sort algorithm.
+     * This is a manual comparison-based sorting approach.
+     */
+    public static void bubbleSort(int[] capacities) {
+        int n = capacities.length;
+        // Outer loop to traverse the entire array
+        for (int i = 0; i < n - 1; i++) {
+            // Inner loop for pairwise comparison
+            for (int j = 0; j < n - i - 1; j++) {
+                // If the current element is greater than the next, swap them
+                if (capacities[j] > capacities[j + 1]) {
+                    int temp = capacities[j];
+                    capacities[j] = capacities[j + 1];
+                    capacities[j + 1] = temp;
+                }
             }
-            this.cargo = newCargo;
-        }
-
-        @Override
-        public String toString() {
-            return type + " bogie currently carrying: " + cargo;
         }
     }
 
     public static void main(String[] args) {
         System.out.println("==========================================");
-        System.out.println(" UC15 - Safe Cargo Assignment Handling ");
+        System.out.println(" UC16 - Manual Sorting (Bubble Sort) ");
         System.out.println("==========================================\n");
 
-        GoodsBogie cylindrical = new GoodsBogie("Cylindrical");
-        GoodsBogie rectangular = new GoodsBogie("Rectangular");
+        // 1. Array of unsorted passenger bogie capacities
+        int[] capacities = {72, 56, 24, 70, 60};
 
-        // Attempting multiple assignments to demonstrate try-catch-finally
-        String[] cargosToAssign = {"Petroleum", "Coal"};
-        GoodsBogie[] bogies = {cylindrical, rectangular};
+        System.out.println("Original Capacities: " + Arrays.toString(capacities));
 
-        for (GoodsBogie bogie : bogies) {
-            for (String cargo : cargosToAssign) {
-                try {
-                    System.out.println("Attempting to assign " + cargo + " to " + bogie.type + "...");
-                    bogie.assignCargo(cargo);
-                    System.out.println("Success: Assignment completed.");
-                } catch (CargoSafetyException e) {
-                    System.err.println("Caught Exception: " + e.getMessage());
-                } finally {
-                    System.out.println("Validation check finished for " + bogie.type + ".\n");
-                }
-            }
-        }
+        // 2. Apply Bubble Sort algorithm
+        bubbleSort(capacities);
 
-        System.out.println("Final Train Status:");
-        System.out.println(cylindrical);
-        System.out.println(rectangular);
-        System.out.println("\nUC15 structured exception handling completed...");
+        // 3. Display sorted results
+        System.out.println("Sorted Capacities:   " + Arrays.toString(capacities));
+
+        System.out.println("\nUC16 manual sorting completed...");
     }
 }
