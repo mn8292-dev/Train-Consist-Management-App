@@ -1,58 +1,58 @@
 import org.junit.jupiter.api.Test;
-import java.util.ArrayList;
-import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TrainConsistManagementAppTest {
 
     @Test
-    void testReduce_TotalSeatCalculation() {
-        // Verifies the computed total equals the sum of all bogie capacities [cite: 1057]
-        List<TrainConsistManagementApp.Bogie> bogies = new ArrayList<>();
-        bogies.add(new TrainConsistManagementApp.Bogie("Sleeper", 72));
-        bogies.add(new TrainConsistManagementApp.Bogie("AC Chair", 56));
-
-        int total = TrainConsistManagementApp.calculateTotalSeats(bogies);
-        assertEquals(128, total); // 72 + 56 = 128
+    void testRegex_ValidTrainID() {
+        // Verifies that a correctly formatted Train ID is accepted
+        assertTrue(TrainConsistManagementApp.validateTrainID("TRN-1234"));
     }
 
     @Test
-    void testReduce_SingleBogieCapacity() {
-        // Verifies behavior when only one bogie exists [cite: 1061, 1062]
-        List<TrainConsistManagementApp.Bogie> bogies = new ArrayList<>();
-        bogies.add(new TrainConsistManagementApp.Bogie("General", 90));
-
-        int total = TrainConsistManagementApp.calculateTotalSeats(bogies);
-        assertEquals(90, total);
+    void testRegex_InvalidTrainIDFormat() {
+        // Verifies that incorrectly formatted Train IDs are rejected
+        assertFalse(TrainConsistManagementApp.validateTrainID("TRAIN12"));
+        assertFalse(TrainConsistManagementApp.validateTrainID("1234-TRN"));
     }
 
     @Test
-    void testReduce_EmptyBogieList() {
-        // Verifies that an empty list returns the identity value (0) [cite: 1064, 1065]
-        List<TrainConsistManagementApp.Bogie> bogies = new ArrayList<>();
-        int total = TrainConsistManagementApp.calculateTotalSeats(bogies);
-        assertEquals(0, total);
+    void testRegex_TrainIDDigitLengthValidation() {
+        // Verifies that Train ID contains exactly four digits
+        assertFalse(TrainConsistManagementApp.validateTrainID("TRN-123"));
+        assertFalse(TrainConsistManagementApp.validateTrainID("TRN-12345"));
     }
 
     @Test
-    void testReduce_CorrectCapacityExtraction() {
-        // Verifies map() correctly extracts capacity values [cite: 1067, 1068]
-        List<TrainConsistManagementApp.Bogie> bogies = new ArrayList<>();
-        bogies.add(new TrainConsistManagementApp.Bogie("First Class", 24));
-
-        int total = TrainConsistManagementApp.calculateTotalSeats(bogies);
-        assertEquals(24, total);
+    void testRegex_ValidCargoCode() {
+        // Verifies that a Cargo Code following the correct format is accepted
+        assertTrue(TrainConsistManagementApp.validateCargoCode("PET-AB"));
     }
 
     @Test
-    void testReduce_OriginalListUnchanged() {
-        // Verifies original list integrity after stream processing [cite: 1072, 1073]
-        List<TrainConsistManagementApp.Bogie> bogies = new ArrayList<>();
-        bogies.add(new TrainConsistManagementApp.Bogie("Sleeper", 72));
+    void testRegex_InvalidCargoCodeFormat() {
+        // Verifies that incorrectly formatted Cargo Codes are rejected
+        assertFalse(TrainConsistManagementApp.validateCargoCode("PET123"));
+        assertFalse(TrainConsistManagementApp.validateCargoCode("AB-PET"));
+    }
 
-        TrainConsistManagementApp.calculateTotalSeats(bogies);
+    @Test
+    void testRegex_CargoCodeUppercaseValidation() {
+        // Verifies that Cargo Code accepts only uppercase characters
+        assertFalse(TrainConsistManagementApp.validateCargoCode("PET-ab"));
+        assertFalse(TrainConsistManagementApp.validateCargoCode("pet-AB"));
+    }
 
-        assertEquals(1, bogies.size());
-        assertEquals("Sleeper", bogies.get(0).name);
+    @Test
+    void testRegex_EmptyInputHandling() {
+        // Verifies behavior when empty strings are provided
+        assertFalse(TrainConsistManagementApp.validateTrainID(""));
+        assertFalse(TrainConsistManagementApp.validateCargoCode(""));
+    }
+
+    @Test
+    void testRegex_ExactPatternMatch() {
+        // Verifies that the entire input must match the pattern
+        assertFalse(TrainConsistManagementApp.validateTrainID("TRN-1234 extra"));
     }
 }
