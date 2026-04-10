@@ -1,62 +1,62 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * DATA CLASS - Bogie
- * Represents a train bogie with a name and seating capacity.
+ * TrainConsistManagementApp
+ * UC8: Filter Passenger Bogies Using Streams
  */
-class Bogie {
-    String name;
-    int capacity;
+public class TrainConsistManagementApp {
 
-    public Bogie(String name, int capacity) {
-        this.name = name;
-        this.capacity = capacity;
+    // Reusing Bogie model from UC7
+    // Marked public so the test class can access it
+    public static class Bogie {
+        public String name;
+        public int capacity;
+
+        public Bogie(String name, int capacity) {
+            this.name = name;
+            this.capacity = capacity;
+        }
+
+        @Override
+        public String toString() {
+            return name + " -> " + capacity;
+        }
     }
 
-    @Override
-    public String toString() {
-        return name + " -> " + capacity;
+    /**
+     * Standard filtering method using Stream API.
+     * Selects bogies where capacity is strictly greater than the threshold.
+     */
+    public static List<Bogie> filterBogies(List<Bogie> bogies, int threshold) {
+        return bogies.stream()                         // Convert list to stream [cite: 65, 72]
+                .filter(b -> b.capacity > threshold)   // Apply filter condition [cite: 66, 73]
+                .collect(Collectors.toList());        // Collect results into a new list [cite: 68, 74]
     }
-}
-
-/**
- * MAIN CLASS - UseCase7TrainConsistMgmt
- * Use Case 7: Sort Bogies by Capacity (Comparator)
- * This class demonstrates sorting a list of bogie objects
- * based on their capacity using a custom Comparator.
- */
-public class UseCase7TrainConsistMgmt {
 
     public static void main(String[] args) {
-        // 1. Display Header
-        System.out.println("=========================================");
-        System.out.println(" UC7: Sort Bogies by Capacity (Comparator)");
-        System.out.println("=========================================\n");
+        System.out.println("==============================================");
+        System.out.println(" UC8 - Filter Passenger Bogies Using Streams ");
+        System.out.println("==============================================\n");
 
-        // 2. Create a List to store Bogie objects
-        List<Bogie> passengerBogies = new ArrayList<>();
+        // 1. User creates a list of bogies [cite: 52]
+        List<Bogie> bogies = new ArrayList<>();
+        bogies.add(new Bogie("Sleeper", 72));
+        bogies.add(new Bogie("AC Chair", 56));
+        bogies.add(new Bogie("First Class", 24));
+        bogies.add(new Bogie("General", 90));
 
-        // 3. Add bogies with different capacities
-        passengerBogies.add(new Bogie("Sleeper", 72));
-        passengerBogies.add(new Bogie("AC Chair", 56));
-        passengerBogies.add(new Bogie("First Class", 24));
-        passengerBogies.add(new Bogie("General", 90));
+        System.out.println("All Bogies:");
+        bogies.forEach(System.out::println);
 
-        // 4. Display bogies before sorting
-        System.out.println("Before Sorting:");
-        passengerBogies.forEach(System.out::println);
+        // Apply filtering logic with a threshold of 60 [cite: 73]
+        List<Bogie> filteredBogies = filterBogies(bogies, 60);
 
-        // 5. SORT: Apply Comparator logic to rearrange elements
-        // We use Comparator.comparingInt to sort by the capacity field
-        passengerBogies.sort(Comparator.comparingInt(b -> b.capacity));
+        // 5. Display qualifying bogies [cite: 56, 75]
+        System.out.println("\nFiltered Bogies (Capacity > 60):");
+        filteredBogies.forEach(System.out::println);
 
-        // 6. Display bogies after sorting
-        System.out.println("\nAfter Sorting by Capacity:");
-        passengerBogies.forEach(System.out::println);
-
-        // 7. Final status message
-        System.out.println("\nUC7 sorting completed...");
+        System.out.println("\nUC8 filtering completed...");
     }
 }
