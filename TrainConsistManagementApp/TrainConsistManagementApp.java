@@ -1,37 +1,49 @@
-import java.util.Arrays;
-
 /**
  * TrainConsistManagementApp
- * UC17: Sort Bogie Names Using Arrays.sort()
+ * UC18: Linear Search for Bogie ID (Array-Based Searching)
  */
 public class TrainConsistManagementApp {
 
     /**
-     * Sorts an array of bogie names alphabetically.
-     * Uses Java's built-in optimized Dual-Pivot Quicksort/TimSort.
+     * Searches for a specific bogie ID in an array using Linear Search.
+     * Compares the target ID against each element sequentially.
      */
-    public static void sortBogieNames(String[] names) {
-        if (names != null) {
-            Arrays.sort(names);
+    public static boolean searchBogieID(String[] bogieIDs, String targetID) {
+        if (bogieIDs == null || targetID == null) {
+            return false;
         }
+
+        for (String id : bogieIDs) {
+            // Check if current ID matches the target (case-sensitive)
+            if (id.equals(targetID)) {
+                return true; // Match found, terminate search immediately
+            }
+        }
+        return false; // Traversed entire array without finding a match
     }
 
     public static void main(String[] args) {
         System.out.println("==========================================");
-        System.out.println(" UC17 - Alphabetical Sorting (Arrays.sort) ");
+        System.out.println(" UC18 - Bogie ID Search (Linear Search) ");
         System.out.println("==========================================\n");
 
-        // 1. Array of unsorted bogie names
-        String[] bogieNames = {"Sleeper", "AC Chair", "First Class", "General", "Luxury"};
+        // 1. Array of bogie IDs in the train consist
+        String[] trainConsist = {"BG101", "BG205", "BG309", "BG412", "BG550"};
 
-        System.out.println("Original Names: " + Arrays.toString(bogieNames));
+        String searchKey = "BG309";
 
-        // 2. Apply built-in sorting
-        sortBogieNames(bogieNames);
+        System.out.println("Scanning train consist for Bogie ID: " + searchKey);
 
-        // 3. Display sorted results
-        System.out.println("Sorted Names:   " + Arrays.toString(bogieNames));
+        // 2. Perform Linear Search
+        boolean found = searchBogieID(trainConsist, searchKey);
 
-        System.out.println("\nUC17 optimized sorting completed...");
+        // 3. Display search result
+        if (found) {
+            System.out.println("SUCCESS: Bogie " + searchKey + " located in the consist.");
+        } else {
+            System.out.println("ALERT: Bogie " + searchKey + " not found in this train.");
+        }
+
+        System.out.println("\nUC18 search completed...");
     }
 }
