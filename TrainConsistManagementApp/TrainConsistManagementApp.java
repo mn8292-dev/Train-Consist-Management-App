@@ -2,62 +2,75 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Custom Exception for handling invalid bogie capacity scenarios.
+ * Custom Exception for unsafe cargo combinations.
  */
-class InvalidCapacityException extends Exception {
-    public InvalidCapacityException(String message) {
+class CargoSafetyException extends Exception {
+    public CargoSafetyException(String message) {
         super(message);
     }
 }
 
 /**
  * TrainConsistManagementApp
- * UC14: Handle Invalid Bogie Capacity (Custom Exception)
+ * UC15: Safe Cargo Assignment Using try-catch-finally
  */
 public class TrainConsistManagementApp {
 
-    public static class Bogie {
-        public String name;
-        public int capacity;
+    public static class GoodsBogie {
+        public String type;
+        public String cargo;
+
+        public GoodsBogie(String type) {
+            this.type = type;
+            this.cargo = "Empty";
+        }
 
         /**
-         * Constructor enforcing the rule: Capacity must be greater than zero.
-         * Throws InvalidCapacityException if the rule is violated.
+         * Dynamically assigns cargo while enforcing safety rules.
+         * Rule: Petroleum can ONLY be assigned to Cylindrical bogies.
          */
-        public Bogie(String name, int capacity) throws InvalidCapacityException {
-            if (capacity <= 0) {
-                throw new InvalidCapacityException("Capacity must be greater than zero");
+        public void assignCargo(String newCargo) throws CargoSafetyException {
+            if (newCargo.equalsIgnoreCase("Petroleum") && !this.type.equalsIgnoreCase("Cylindrical")) {
+                throw new CargoSafetyException("Safety Violation: Petroleum cannot be carried in " + this.type + " bogies.");
             }
-            this.name = name;
-            this.capacity = capacity;
+            this.cargo = newCargo;
         }
 
         @Override
         public String toString() {
-            return name + " -> Capacity: " + capacity;
+            return type + " bogie currently carrying: " + cargo;
         }
     }
 
     public static void main(String[] args) {
         System.out.println("==========================================");
-        System.out.println(" UC14 - Custom Exception Handling ");
+        System.out.println(" UC15 - Safe Cargo Assignment Handling ");
         System.out.println("==========================================\n");
 
-        List<Bogie> bogies = new ArrayList<>();
+        GoodsBogie cylindrical = new GoodsBogie("Cylindrical");
+        GoodsBogie rectangular = new GoodsBogie("Rectangular");
 
-        try {
-            System.out.println("Adding valid bogie...");
-            bogies.add(new Bogie("Sleeper", 72));
+        // Attempting multiple assignments to demonstrate try-catch-finally
+        String[] cargosToAssign = {"Petroleum", "Coal"};
+        GoodsBogie[] bogies = {cylindrical, rectangular};
 
-            System.out.println("Adding invalid bogie (Zero Capacity)...");
-            // This line will trigger the exception
-            bogies.add(new Bogie("General", 0));
-
-        } catch (InvalidCapacityException e) {
-            System.err.println("Error creating bogie: " + e.getMessage());
+        for (GoodsBogie bogie : bogies) {
+            for (String cargo : cargosToAssign) {
+                try {
+                    System.out.println("Attempting to assign " + cargo + " to " + bogie.type + "...");
+                    bogie.assignCargo(cargo);
+                    System.out.println("Success: Assignment completed.");
+                } catch (CargoSafetyException e) {
+                    System.err.println("Caught Exception: " + e.getMessage());
+                } finally {
+                    System.out.println("Validation check finished for " + bogie.type + ".\n");
+                }
+            }
         }
 
-        System.out.println("\nFinal Bogie List Count: " + bogies.size());
-        System.out.println("\nUC14 exception handling completed...");
+        System.out.println("Final Train Status:");
+        System.out.println(cylindrical);
+        System.out.println(rectangular);
+        System.out.println("\nUC15 structured exception handling completed...");
     }
 }

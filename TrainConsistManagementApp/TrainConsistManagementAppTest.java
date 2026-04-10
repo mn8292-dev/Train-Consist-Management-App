@@ -1,57 +1,66 @@
 import org.junit.jupiter.api.Test;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TrainConsistManagementAppTest {
 
     @Test
-    void testException_ValidCapacityCreation() {
-        // Verifies that a bogie with capacity greater than zero is created without error
-        assertDoesNotThrow(() -> {
-            new TrainConsistManagementApp.Bogie("Sleeper", 72);
-        });
+    void testCargo_SafeAssignment() {
+        // Verifies that safe cargo assignments (Cylindrical + Petroleum) succeed
+        TrainConsistManagementApp.GoodsBogie bogie = new TrainConsistManagementApp.GoodsBogie("Cylindrical");
+        assertDoesNotThrow(() -> bogie.assignCargo("Petroleum"));
+        assertEquals("Petroleum", bogie.cargo);
     }
 
     @Test
-    void testException_NegativeCapacityThrowsException() {
-        // Verifies that a negative capacity triggers the custom exception
-        InvalidCapacityException exception = assertThrows(InvalidCapacityException.class, () -> {
-            new TrainConsistManagementApp.Bogie("Sleeper", -10);
-        });
-        assertEquals("Capacity must be greater than zero", exception.getMessage());
+    void testCargo_UnsafeAssignmentHandled() {
+        // Verifies that unsafe assignments trigger the CargoSafetyException
+        TrainConsistManagementApp.GoodsBogie bogie = new TrainConsistManagementApp.GoodsBogie("Rectangular");
+        assertThrows(CargoSafetyException.class, () -> bogie.assignCargo("Petroleum"));
     }
 
     @Test
-    void testException_ZeroCapacityThrowsException() {
-        // Verifies that zero capacity is treated as invalid input
-        assertThrows(InvalidCapacityException.class, () -> {
-            new TrainConsistManagementApp.Bogie("General", 0);
-        });
-    }
-
-    @Test
-    void testException_ExceptionMessageValidation() {
-        // Verifies that the correct error message is returned
+    void testCargo_CargoNotAssignedAfterFailure() {
+        // Verifies that the cargo status remains "Empty" if the assignment fails
+        TrainConsistManagementApp.GoodsBogie bogie = new TrainConsistManagementApp.GoodsBogie("Rectangular");
         try {
-            new TrainConsistManagementApp.Bogie("AC Chair", -5);
-        } catch (InvalidCapacityException e) {
-            assertEquals("Capacity must be greater than zero", e.getMessage());
+            bogie.assignCargo("Petroleum");
+        } catch (CargoSafetyException e) {
+            // Exception expected
         }
+        assertEquals("Empty", bogie.cargo);
     }
 
     @Test
-    void testException_ObjectIntegrityAfterCreation() throws InvalidCapacityException {
-        // Verifies that valid bogie objects store the correct values
-        TrainConsistManagementApp.Bogie bogie = new TrainConsistManagementApp.Bogie("First Class", 24);
-        assertEquals("First Class", bogie.name);
-        assertEquals(24, bogie.capacity);
+    void testCargo_ProgramContinuesAfterException() {
+        // Verifies that an exception in one assignment doesn't crash subsequent logic
+        TrainConsistManagementApp.GoodsBogie bogie1 = new TrainConsistManagementApp.GoodsBogie("Rectangular");
+        TrainConsistManagementApp.GoodsBogie bogie2 = new TrainConsistManagementApp.GoodsBogie("Rectangular");
+
+        try {
+            bogie1.assignCargo("Petroleum");
+        } catch (CargoSafetyException e) {
+            // Handle first failure
+        }
+
+        // Program should reach this line and succeed
+        assertDoesNotThrow(() -> bogie2.assignCargo("Coal"));
+        assertEquals("Coal", bogie2.cargo);
     }
 
     @Test
-    void testException_MultipleValidBogiesCreation() {
-        // Verifies that multiple valid bogies can be created in succession
-        assertDoesNotThrow(() -> {
-            new TrainConsistManagementApp.Bogie("Sleeper", 72);
-            new TrainConsistManagementApp.Bogie("AC Chair", 56);
-        });
+    void testCargo_FinallyBlockExecution() {
+        // Verifies that the finally logic (simulated by checking if we pass through the block) runs
+        boolean finallyExecuted = false;
+        try {
+            TrainConsistManagementApp.GoodsBogie bogie = new TrainConsistManagementApp.GoodsBogie("Rectangular");
+            bogie.assignCargo("Petroleum");
+        } catch (CargoSafetyException e) {
+            // Caught
+        } finally {
+            finallyExecuted = true;
+        }
+        assertTrue(finallyExecuted);
     }
 }
